@@ -1,0 +1,62 @@
+[build-system]
+requires = ["uv_build>=0.11.0,<0.12.0"]
+build-backend = "uv_build"
+
+[project]
+name = "sphinx-revealjs-admonitions"
+version = "0.1.0"
+description = "Render Sphinx admonitions as standalone Reveal.js slides"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.13"
+keywords = ["sphinx", "revealjs", "slides", "admonition", "presentation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Sphinx :: Extension",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Documentation :: Sphinx",
+]
+authors = [
+    { name = "driller", email = "eleshis@gmail.com" },
+]
+dependencies = [
+    "sphinx-revealjs>=3.2,<4",
+]
+
+[project.urls]
+Homepage = "https://github.com/drillan/sphinx-revealjs-admonitions"
+Repository = "https://github.com/drillan/sphinx-revealjs-admonitions"
+
+[dependency-groups]
+test = [
+    "pytest",
+    "myst-parser",
+]
+dev = [
+    "ruff",
+    "mypy",
+    "types-docutils",
+    { include-group = "test" },
+]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "ANN", "D"]
+ignore = ["D203", "D213", "ANN401"]
+# ANN401: SphinxPostTransform.run のシグネチャが **kwargs: Any を要求するため
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D", "ANN"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+exclude = ["^tests/"]
+
+[[tool.mypy.overrides]]
+module = ["sphinx_revealjs.*"]
+ignore_missing_imports = true
