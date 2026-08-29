@@ -1,0 +1,33 @@
+"""Post-transform that turns marked admonitions into standalone slides."""
+
+from __future__ import annotations
+
+from typing import Any
+
+from docutils import nodes
+from sphinx.transforms.post_transforms import SphinxPostTransform
+from sphinx_revealjs.nodes import revealjs_break
+
+MARKER = "slide"
+
+
+class AdmonitionToSlide(SphinxPostTransform):
+    """Insert ``revealjs_break`` siblings around marked admonitions."""
+
+    default_priority = 450
+    builders = ("revealjs", "dirrevealjs")
+
+    def run(self, **kwargs: Any) -> None:
+        """Split every marked admonition into its own slide."""
+        targets: list[nodes.Element] = [
+            node
+            for node in self.document.findall(nodes.Element)
+            if isinstance(node, nodes.Admonition) and MARKER in node.get("classes", [])
+        ]
+        for node in targets:
+            parent = node.parent
+            if not isinstance(parent, nodes.section):
+                continue
+            index = parent.index(node)
+            parent.insert(index + 1, revealjs_break())
+            parent.insert(index, revealjs_break())
