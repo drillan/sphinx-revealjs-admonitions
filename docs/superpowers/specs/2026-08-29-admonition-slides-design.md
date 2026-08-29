@@ -120,8 +120,15 @@ builders = ("revealjs", "dirrevealjs")
 ```
 
 `RevealjsHTMLBuilder` は `format` を上書きせず `StandaloneHTMLBuilder` から `"html"` を継承する。
-`formats = ("html",)` で限定すると通常の HTML ビルドでも発火し、出力を破壊する。
-必ず `builders` で限定する。
+このため `formats = ("html",)` で限定すると通常の HTML ビルドでも発火する。
+
+実測では HTML 出力そのものは壊れない。`revealjs_break` は html ビルダーに対して
+`skip_node` で登録されており、何も描画しないためである。
+壊れるのは利用者の体験のほうで、**4.5 の警告が HTML ビルド時にも出る**。
+スライドと通常ドキュメントを両方ビルドする構成では、対処のしようがないノイズになる。
+
+加えて `builders` のほうが意図を正確に表す。無駄な doctree 走査も避けられる。
+以上より `builders` で限定する。
 
 ### 4.2 優先度
 
@@ -265,13 +272,13 @@ sphinx-revealjs 3.2.1（PyPI リリース版）、Sphinx 9.1.0 で確認した�
 
 | 確認項目 | 結果 |
 |---|---|
-| ビルダー限定 | `RevealjsHTMLBuilder` は `format` を上書きせず `"html"` を継承。`builders` での限定が必要 |
+| ビルダー限定 | `RevealjsHTMLBuilder` は `format` を上書きせず `"html"` を継承。`formats` 限定では html ビルドでも発火するが出力は壊れず、4.5 の警告だけが余分に出る |
 | ノード判定 | `isinstance(node, nodes.Admonition)` が note/warning/tip/danger/caution/attention/error/hint/important/seealso/汎用 admonition/versionmodified を捕捉 |
 | `versionadded` | `:class:` オプションを持たず、マーカー指定不可 |
 | タグ釣り合い | 水平スライド・縦積み・level 4 以深のすべてで、挿入した break 1 つにつき開閉が +1 ずつ |
 | 空スライド | 末尾 admonition、および後続が不可視ノードだけの場合に生成されないことを確認 |
 | id 重複 | `revealjs_use_section_ids = True` でも重複なし。分割後スライドには id が付かない |
-| html ビルダー | `builders` 限定により発火せず、admonition が通常どおり出力される |
+| html ビルダー | `builders` 限定により発火しない。仮に発火させても `<section>` 開閉は 6/6 で釣り合い、見出しの重複もなく出力は正常 |
 | 非 section 親 | リスト項目内で警告が出て、分割されないことを確認 |
 | 優先度 | 400 は latex ビルダーの 4 つが占有。450 は未使用 |
 | reveal.css | `.reveal.slide ...` の 4 セレクタのみ。単独 `.slide` セレクタは 0 件 |
