@@ -98,6 +98,14 @@ def test_adjacent_admonitions_make_no_empty_slide(app):
     assert html.count("<h2>Adjacent</h2>") == 3
 
 
+@pytest.mark.sphinx("revealjs", testroot="myst")
+def test_non_rendering_sibling_makes_no_empty_slide(app):
+    app.build()
+    html = read_deck(app)
+    # revealjs-section renders nothing, so the admonition still opens the slide.
+    assert html.count("<h2>Directive sibling</h2>") == 1
+
+
 @pytest.mark.sphinx("revealjs", testroot="rst")
 def test_rst_behaves_like_myst(app, warning):
     app.build()

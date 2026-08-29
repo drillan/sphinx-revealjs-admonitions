@@ -7,9 +7,22 @@ from typing import Any
 from docutils import nodes
 from sphinx.transforms.post_transforms import SphinxPostTransform
 from sphinx.util import logging
-from sphinx_revealjs.nodes import revealjs_break
+from sphinx_revealjs.nodes import (
+    revealjs_break,
+    revealjs_section,
+    revealjs_slide,
+    revealjs_vertical,
+)
 
 MARKER = "slide"
+
+IGNORED = (
+    nodes.Invisible,
+    nodes.system_message,
+    revealjs_section,
+    revealjs_vertical,
+    revealjs_slide,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +61,7 @@ class AdmonitionToSlide(SphinxPostTransform):
     def _trailing_break_needed(tail: list[nodes.Node]) -> bool:
         """Tell whether a break after the admonition would open a slide with content."""
         for node in tail:
-            if isinstance(node, (nodes.Invisible, nodes.system_message)):
+            if isinstance(node, IGNORED):
                 continue
             return not isinstance(node, (nodes.section, revealjs_break))
         return False
@@ -57,7 +70,7 @@ class AdmonitionToSlide(SphinxPostTransform):
     def _leading_break_needed(head: list[nodes.Node]) -> bool:
         """Tell whether a break before the admonition leaves a slide with content."""
         for node in reversed(head):
-            if isinstance(node, (nodes.Invisible, nodes.system_message)):
+            if isinstance(node, IGNORED):
                 continue
             return not isinstance(node, (nodes.title, revealjs_break))
         return False

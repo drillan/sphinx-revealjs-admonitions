@@ -87,3 +87,15 @@ First of two.
 
 Second of two.
 :::
+
+## Directive sibling
+
+```{revealjs-section}
+:data-background-color: red
+```
+
+:::{warning}
+:class: slide
+
+Only content in the section.
+:::
