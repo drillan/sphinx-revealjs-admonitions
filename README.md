@@ -67,8 +67,8 @@ The marker stays on the rendered element, so `slide` doubles as a CSS hook:
 ```
 
 A ready-made sample lives in
-[`examples/slide-admonition.css`](https://github.com/drillan/sphinx-revealjs-admonitions/blob/main/examples/slide-admonition.css).
-Copy it into your static directory and wire it up:
+[`examples/slide-demo/_static/slide-admonition.css`](https://github.com/drillan/sphinx-revealjs-admonitions/blob/main/examples/slide-demo/_static/slide-admonition.css).
+Copy it into your own static directory and wire it up:
 
 ```python
 revealjs_static_path = ["_static"]
@@ -77,6 +77,21 @@ revealjs_css_files = ["slide-admonition.css"]
 
 If your project already sets `revealjs_static_path`, append to that list
 instead of overwriting it.
+
+That stylesheet is not shipped inside the installed package — it is a starting
+point to copy and edit, not a dependency.
+
+## Example project
+
+[`examples/slide-demo/`](https://github.com/drillan/sphinx-revealjs-admonitions/blob/main/examples/slide-demo) is a small deck that
+exercises everything above: the split, the heading carried onto each slide, an
+unmarked admonition for contrast, and the sample stylesheet applied. Build it
+with:
+
+```console
+cd examples/slide-demo
+make revealjs
+```
 
 **Always write `.admonition.slide`, never a bare `.slide`.** Reveal.js puts the
 transition name on the deck wrapper — `<div class="reveal slide …">` with the

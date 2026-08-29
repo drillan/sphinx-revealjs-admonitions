@@ -1,7 +1,13 @@
 import re
 from pathlib import Path
 
-CSS = Path(__file__).parent.parent / "examples" / "slide-admonition.css"
+CSS = (
+    Path(__file__).parent.parent
+    / "examples"
+    / "slide-demo"
+    / "_static"
+    / "slide-admonition.css"
+)
 
 
 def test_example_css_never_uses_a_bare_slide_selector():

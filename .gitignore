@@ -223,3 +223,6 @@ docs/superpowers/
 
 # Claude Code worktrees
 .claude/
+
+# Sphinx build output in the example project
+_build/
