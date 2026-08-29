@@ -8,8 +8,16 @@ the section heading over from the slide it was written in.
 
 ## Installation
 
+Not on PyPI yet — install from the repository:
+
 ```console
-pip install sphinx-revealjs-admonitions
+pip install git+https://github.com/drillan/sphinx-revealjs-admonitions.git
+```
+
+With uv:
+
+```console
+uv add git+https://github.com/drillan/sphinx-revealjs-admonitions.git
 ```
 
 ## Usage
@@ -83,10 +91,13 @@ point to copy and edit, not a dependency.
 
 ## Example project
 
+**[View the deck live](https://drillan.github.io/sphinx-revealjs-admonitions/)** —
+deployed from `main` on every push.
+
 [`examples/slide-demo/`](https://github.com/drillan/sphinx-revealjs-admonitions/blob/main/examples/slide-demo) is a small deck that
 exercises everything above: the split, the heading carried onto each slide, an
 unmarked admonition for contrast, and the sample stylesheet applied. Build it
-with:
+locally with:
 
 ```console
 cd examples/slide-demo
