@@ -17,3 +17,23 @@ After text.
 :::{warning}
 Unmarked stays inline.
 :::
+
+## Trailing
+
+Only text before.
+
+:::{tip}
+:class: slide
+
+Trailing tip.
+:::
+
+## Comment tail
+
+:::{important}
+:class: slide
+
+Followed only by a comment.
+:::
+
+% speaker comment
