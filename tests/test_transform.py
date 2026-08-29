@@ -37,7 +37,9 @@ def test_trailing_admonition_makes_no_empty_slide(app):
 def test_invisible_tail_makes_no_empty_slide(app):
     app.build()
     html = read_deck(app)
-    assert html.count("<h2>Comment tail</h2>") == 2
+    # The admonition opens the section, so it stays on the section's own slide;
+    # the trailing comment is invisible, so nothing splits off after it.
+    assert html.count("<h2>Comment tail</h2>") == 1
 
 
 @pytest.mark.sphinx("revealjs", testroot="myst")
@@ -67,9 +69,33 @@ def test_inserted_breaks_keep_section_tags_balanced(app, make_app, app_params):
     baseline.build()
     plain = (baseline.outdir / "index.html").read_text(encoding="utf-8")
 
-    # Splitting: 2 breaks, Trailing: 1, Comment tail: 1, In list: 0
-    assert marked.count("<section") - plain.count("<section") == 4
-    assert marked.count("</section>") - plain.count("</section>") == 4
+    # Splitting 2, Trailing 1, Leading 1, Subsection tail 1, Adjacent 2
+    assert marked.count("<section") - plain.count("<section") == 7
+    assert marked.count("</section>") - plain.count("</section>") == 7
+
+
+@pytest.mark.sphinx("revealjs", testroot="myst")
+def test_admonition_first_in_section_makes_no_empty_slide(app):
+    app.build()
+    html = read_deck(app)
+    # The section's own slide holds the admonition; only "Text after." splits off.
+    assert html.count("<h2>Leading</h2>") == 2
+
+
+@pytest.mark.sphinx("revealjs", testroot="myst")
+def test_subsection_tail_makes_no_empty_slide(app):
+    app.build()
+    html = read_deck(app)
+    # A subsection opens its own slide, so no trailing break is needed.
+    assert html.count("<h2>Subsection tail</h2>") == 2
+
+
+@pytest.mark.sphinx("revealjs", testroot="myst")
+def test_adjacent_admonitions_make_no_empty_slide(app):
+    app.build()
+    html = read_deck(app)
+    # Intro, first admonition, second admonition — nothing empty between them.
+    assert html.count("<h2>Adjacent</h2>") == 3
 
 
 @pytest.mark.sphinx("revealjs", testroot="rst")
