@@ -1,1 +1,95 @@
 # sphinx-revealjs-admonitions
+
+Render Sphinx admonitions as standalone [Reveal.js](https://revealjs.com/) slides
+in decks built with [sphinx-revealjs](https://github.com/attakei/sphinx-revealjs).
+
+Mark an admonition with `:class: slide` and it becomes its own slide, carrying
+the section heading over from the slide it was written in.
+
+## Installation
+
+```console
+pip install sphinx-revealjs-admonitions
+```
+
+## Usage
+
+Add the extension to `conf.py`:
+
+```python
+extensions = [
+    "sphinx_revealjs",
+    "sphinx_revealjs_admonitions",
+]
+```
+
+Then mark any admonition with `:class: slide`.
+
+MyST:
+
+```markdown
+:::{note}
+:class: slide
+
+This note becomes a slide of its own.
+:::
+```
+
+reStructuredText:
+
+```rst
+.. note::
+   :class: slide
+
+   This note becomes a slide of its own.
+```
+
+Build your deck exactly as before — `sphinx-build -b revealjs`. This extension
+is a post-transform, so it adds no build step and no intermediate artifacts.
+
+## Which admonitions can be marked
+
+Any directive that accepts a `:class:` option and produces a
+`docutils.nodes.Admonition` node:
+
+`note`, `warning`, `tip`, `danger`, `caution`, `attention`, `error`, `hint`,
+`important`, `seealso`, and the generic `admonition`.
+
+`versionadded` and `deprecated` accept no `:class:` option, so they cannot be
+marked.
+
+## Styling
+
+The marker stays on the rendered element, so `slide` doubles as a CSS hook:
+
+```html
+<div class="slide admonition note">…</div>
+```
+
+A ready-made sample lives in [`examples/slide-admonition.css`](examples/slide-admonition.css).
+Copy it into your static directory and wire it up:
+
+```python
+revealjs_static_path = ["_static"]
+revealjs_css_files = ["slide-admonition.css"]
+```
+
+**Always write `.admonition.slide`, never a bare `.slide`.** Reveal.js puts the
+transition name on the deck wrapper — `<div class="reveal slide …">` with the
+default transition — so a bare `.slide` rule also hits the whole deck.
+
+## Limitations
+
+- An admonition must be a direct child of a section. One nested in a list item
+  or a block quote cannot be split; the build emits a warning and leaves it
+  inline.
+- Split slides carry no `id`, so they cannot be linked to individually. This
+  matches the behaviour of the `revealjs-break` directive.
+- Under headings deeper than the third level, sphinx-revealjs does not open
+  slides at all; a following sibling section is absorbed into the split slide.
+  This mirrors the behaviour without this extension. A subsection at that depth
+  following a marked admonition is merged into the admonition's own slide.
+
+## License
+
+Apache-2.0

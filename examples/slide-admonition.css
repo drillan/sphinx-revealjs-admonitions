@@ -1,0 +1,39 @@
+/*
+ * Sample styling for admonitions turned into standalone slides.
+ *
+ * Copy this file into your Sphinx project's static directory and add it to
+ * `revealjs_css_files` in conf.py:
+ *
+ *     revealjs_static_path = ["_static"]
+ *     revealjs_css_files = ["slide-admonition.css"]
+ *
+ * Always use the compound selector `.admonition.slide`. A bare `.slide`
+ * selector also matches the deck wrapper element, because Reveal.js puts the
+ * transition name (`slide` by default) on `<div class="reveal slide ...">`.
+ */
+
+.reveal .admonition.slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 60vh;
+  padding: 1.2em 1.5em;
+  border-left: 0.25em solid currentColor;
+  border-radius: 0.2em;
+  background: rgba(127, 127, 127, 0.12);
+  text-align: left;
+}
+
+.reveal .admonition.slide > .admonition-title {
+  margin: 0 0 0.6em;
+  font-weight: 700;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+}
+
+.reveal .admonition.slide > p:last-child {
+  margin-bottom: 0;
+}
