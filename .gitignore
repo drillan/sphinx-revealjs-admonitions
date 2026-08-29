@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Superpowers working documents (specs, plans, SDD workspace)
+docs/superpowers/
+.superpowers/
