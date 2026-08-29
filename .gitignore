@@ -220,3 +220,6 @@ __marimo__/
 # Superpowers working documents (specs, plans, SDD workspace)
 docs/superpowers/
 .superpowers/
+
+# Claude Code worktrees
+.claude/
