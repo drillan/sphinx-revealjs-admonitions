@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from docutils import nodes
+from sphinx import addnodes
 from sphinx.transforms.post_transforms import SphinxPostTransform
 from sphinx.util import logging
 from sphinx_revealjs.nodes import (
@@ -16,6 +17,12 @@ from sphinx_revealjs.nodes import (
 
 MARKER = "slide"
 
+# Node types known to render no HTML output of their own, so their presence
+# next to a marked admonition cannot make a slide non-empty. This list is
+# NOT exhaustive -- it is a blocklist of types found empirically to render
+# nothing, and grows as more are found. Some types can't be judged by type
+# alone (a `raw` node's emptiness depends on its `format`; a hidden toctree
+# is only empty once resolved) -- see `_renders_nothing`.
 IGNORED = (
     nodes.Invisible,
     nodes.system_message,
@@ -25,6 +32,37 @@ IGNORED = (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _renders_nothing(node: nodes.Node) -> bool:
+    """Tell whether a sibling node is known to render no HTML output.
+
+    Beyond the static ``IGNORED`` blocklist, two node types render nothing
+    only conditionally:
+
+    - a ``raw`` node renders nothing unless "html" is one of its (possibly
+      space-separated) ``format`` values;
+    - a ``toctree`` directive's sibling is a ``compound`` node classed
+      "toctree-wrapper", not the ``addnodes.toctree`` node itself -- that
+      node is wrapped inside it. At the point this post-transform runs the
+      toctree has not yet been resolved into a rendered list, so it is still
+      an ``addnodes.toctree`` child carrying a ``hidden`` attribute; it
+      renders nothing only when every such child is hidden (or, after
+      resolution, when the compound is simply empty). A visible toctree
+      renders a list of links and must not be ignored.
+    """
+    if isinstance(node, IGNORED):
+        return True
+    if isinstance(node, nodes.raw):
+        return "html" not in node.get("format", "").split()
+    if isinstance(node, nodes.compound) and "toctree-wrapper" in node.get(
+        "classes", []
+    ):
+        return all(
+            isinstance(child, addnodes.toctree) and child.get("hidden", False)
+            for child in node.children
+        )
+    return False
 
 
 class AdmonitionToSlide(SphinxPostTransform):
@@ -61,7 +99,7 @@ class AdmonitionToSlide(SphinxPostTransform):
     def _trailing_break_needed(tail: list[nodes.Node]) -> bool:
         """Tell whether a break after the admonition would open a slide with content."""
         for node in tail:
-            if isinstance(node, IGNORED):
+            if _renders_nothing(node):
                 continue
             return not isinstance(node, (nodes.section, revealjs_break))
         return False
@@ -70,7 +108,7 @@ class AdmonitionToSlide(SphinxPostTransform):
     def _leading_break_needed(head: list[nodes.Node]) -> bool:
         """Tell whether a break before the admonition leaves a slide with content."""
         for node in reversed(head):
-            if isinstance(node, IGNORED):
+            if _renders_nothing(node):
                 continue
             return not isinstance(node, (nodes.title, revealjs_break))
         return False

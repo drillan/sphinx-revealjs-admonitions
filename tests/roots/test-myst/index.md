@@ -99,3 +99,68 @@ Second of two.
 
 Only content in the section.
 :::
+
+## Trailing raw
+
+:::{seealso}
+:class: slide
+
+Marked seealso, followed only by non-html raw.
+:::
+
+```{raw} latex
+non-html raw content
+```
+
+## Trailing hidden toctree
+
+:::{admonition} Marked generic
+:class: slide
+
+Followed only by a hidden toctree.
+:::
+
+```{toctree}
+:hidden:
+
+other
+```
+
+## Leading hidden toctree
+
+```{toctree}
+:hidden:
+
+other2
+```
+
+:::{tip}
+:class: slide
+
+Preceded only by a hidden toctree.
+:::
+
+## Trailing html raw
+
+:::{warning}
+:class: slide
+
+Marked warning, followed by html raw.
+:::
+
+```{raw} html
+<p>Real html content.</p>
+```
+
+## Trailing visible toctree
+
+:::{hint}
+:class: slide
+
+Marked hint, followed by a visible toctree.
+:::
+
+```{toctree}
+
+other3
+```
