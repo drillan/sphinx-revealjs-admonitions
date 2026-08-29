@@ -1,0 +1,42 @@
+=========
+Test deck
+=========
+
+Splitting
+=========
+
+Before text.
+
+.. note::
+   :class: slide
+
+   Marked note.
+
+After text.
+
+Inline
+======
+
+.. warning::
+
+   Unmarked stays inline.
+
+Trailing
+========
+
+Only text before.
+
+.. tip::
+   :class: slide
+
+   Trailing tip.
+
+In list
+=======
+
+- item
+
+  .. danger::
+     :class: slide
+
+     Parent is a list_item.

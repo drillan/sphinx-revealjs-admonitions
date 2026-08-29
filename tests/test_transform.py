@@ -70,3 +70,14 @@ def test_inserted_breaks_keep_section_tags_balanced(app, make_app, app_params):
     # Splitting: 2 breaks, Trailing: 1, Comment tail: 1, In list: 0
     assert marked.count("<section") - plain.count("<section") == 4
     assert marked.count("</section>") - plain.count("</section>") == 4
+
+
+@pytest.mark.sphinx("revealjs", testroot="rst")
+def test_rst_behaves_like_myst(app, warning):
+    app.build()
+    html = read_deck(app)
+    assert html.count("<h2>Splitting</h2>") == 3
+    assert html.count("<h2>Inline</h2>") == 1
+    assert html.count("<h2>Trailing</h2>") == 2
+    assert html.count("<h2>In list</h2>") == 1
+    assert "not a direct child of a section" in warning.getvalue()
