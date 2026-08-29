@@ -66,13 +66,17 @@ The marker stays on the rendered element, so `slide` doubles as a CSS hook:
 <div class="slide admonition note">…</div>
 ```
 
-A ready-made sample lives in [`examples/slide-admonition.css`](examples/slide-admonition.css).
+A ready-made sample lives in
+[`examples/slide-admonition.css`](https://github.com/drillan/sphinx-revealjs-admonitions/blob/main/examples/slide-admonition.css).
 Copy it into your static directory and wire it up:
 
 ```python
 revealjs_static_path = ["_static"]
 revealjs_css_files = ["slide-admonition.css"]
 ```
+
+If your project already sets `revealjs_static_path`, append to that list
+instead of overwriting it.
 
 **Always write `.admonition.slide`, never a bare `.slide`.** Reveal.js puts the
 transition name on the deck wrapper — `<div class="reveal slide …">` with the
@@ -89,6 +93,15 @@ default transition — so a bare `.slide` rule also hits the whole deck.
   slides at all; a following sibling section is absorbed into the split slide.
   This mirrors the behaviour without this extension. A subsection at that depth
   following a marked admonition is merged into the admonition's own slide.
+- With `revealjs_notes_from_comments` enabled, a comment written directly
+  after a marked admonition attaches its speaker notes to the *next* slide,
+  not the admonition's own slide — the trailing break is inserted between
+  the admonition and the comment.
+- A `revealjs-section` directive's `:data-background-color:` (or any other
+  `data-*` attribute) applies only to the section's first slide. Slides
+  produced by an inserted break do not carry it, so marking an admonition in
+  a section that also sets a background loses that background on the split
+  slides.
 
 ## License
 

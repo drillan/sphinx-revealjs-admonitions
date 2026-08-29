@@ -29,6 +29,9 @@ dependencies = [
 Homepage = "https://github.com/drillan/sphinx-revealjs-admonitions"
 Repository = "https://github.com/drillan/sphinx-revealjs-admonitions"
 
+[tool.uv.build-backend]
+source-include = ["examples/**"]
+
 [dependency-groups]
 test = [
     "pytest",

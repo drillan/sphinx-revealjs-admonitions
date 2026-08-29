@@ -1,4 +1,5 @@
 import pytest
+from sphinx_revealjs.nodes import revealjs_break
 
 
 @pytest.mark.sphinx("revealjs", testroot="myst")
@@ -59,6 +60,46 @@ def test_html_builder_emits_no_warning(app, warning):
     assert "not a direct child of a section" not in warning.getvalue()
 
 
+@pytest.mark.sphinx("html", testroot="myst")
+def test_html_builder_output_is_unchanged(app, make_app, app_params):
+    # test_html_builder_emits_no_warning only pins the absence of a warning,
+    # which would also pass if the transform silently failed to load. Pin
+    # the actual design requirement: with this extension limited to the
+    # revealjs/dirrevealjs builders, an "html" build's output is byte-for-
+    # byte identical whether or not the extension is even installed.
+    app.build()
+    with_extension = (app.outdir / "index.html").read_text(encoding="utf-8")
+
+    args, kwargs = app_params
+    kwargs = dict(kwargs)
+    kwargs["confoverrides"] = {"extensions": ["myst_parser", "sphinx_revealjs"]}
+    kwargs["freshenv"] = True
+    # Its own builddir: both apps must not write over the same index.html.
+    kwargs["builddir"] = kwargs["srcdir"] / "_build_no_extension"
+    without_extension = make_app(*args, **kwargs)
+    without_extension.build()
+    without_extension_html = (without_extension.outdir / "index.html").read_text(
+        encoding="utf-8"
+    )
+
+    assert with_extension == without_extension_html
+
+
+@pytest.mark.sphinx("html", testroot="myst")
+def test_html_builder_never_inserts_breaks(app):
+    # Byte-equality above turns out not to be self-discriminating: sphinx-
+    # revealjs's revealjs_break node has no dedicated "html" visitor, so
+    # even if the transform ran during an "html" build and inserted breaks,
+    # they would render as nothing and the two builds would still compare
+    # equal (verified by temporarily adding "html" to this extension's
+    # `builders`: test_html_builder_output_is_unchanged stayed green, so it
+    # alone would not catch that regression). Assert directly on the
+    # doctree instead, which does catch it.
+    app.build()
+    doctree = app.env.get_and_resolve_doctree("index", app.builder, tags=app.tags)
+    assert not list(doctree.findall(revealjs_break))
+
+
 @pytest.mark.sphinx("revealjs", testroot="myst")
 def test_inserted_breaks_keep_section_tags_balanced(app, make_app, app_params):
     app.build()
@@ -68,6 +109,9 @@ def test_inserted_breaks_keep_section_tags_balanced(app, make_app, app_params):
     kwargs = dict(kwargs)
     kwargs["confoverrides"] = {"extensions": ["myst_parser", "sphinx_revealjs"]}
     kwargs["freshenv"] = True
+    # Its own builddir: this baseline must not share output with `app` (or
+    # any other test), so this assertion never depends on rebuild ordering.
+    kwargs["builddir"] = kwargs["srcdir"] / "_build_baseline"
     baseline = make_app(*args, **kwargs)
     baseline.build()
     plain = (baseline.outdir / "index.html").read_text(encoding="utf-8")
