@@ -52,6 +52,9 @@ admonition をコンテナで包むと親が section でなくなり、見出し
 extensions = ["sphinx_revealjs", "sphinx_revealjs_admonitions"]
 ```
 
+スライドのビルド手順は変わらない。`sphinx-build -b revealjs` のままであり、
+post-transform であるため追加のビルドステップも中間生成物も発生しない。
+
 ### 3.2 記法
 
 admonition の `:class:` オプションにマーカー `slide` を指定する。
@@ -192,6 +195,8 @@ sphinx-revealjs-admonitions/
 └── LICENSE
 ```
 
+- build backend: `uv_build`（同一メンテナの `sphinx-oceanid` と運用を揃える。
+  sphinx-revealjs 本体は `flit_core` + Taskfile + aqua + lefthook だが、これは本家の運用都合であり追随しない）
 - `requires-python = ">=3.13"`
 - `dependencies = ["sphinx-revealjs>=3.2,<4"]`
 - 開発依存: `pytest`、`myst-parser`、`ruff`、`mypy`
