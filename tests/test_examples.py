@@ -9,7 +9,7 @@ def test_example_css_never_uses_a_bare_slide_selector():
     text = re.sub(r"/\*.*?\*/", "", CSS.read_text(encoding="utf-8"), flags=re.S)
     bare = [
         match.group(0)
-        for match in re.finditer(r"(?<![\w.-])\.slide\b", text)
-        if not text[: match.start()].rstrip().endswith(".admonition")
+        for match in re.finditer(r"\.slide\b", text)
+        if not text[: match.start()].endswith(".admonition")
     ]
     assert bare == [], f"bare .slide selector found: {bare}"
