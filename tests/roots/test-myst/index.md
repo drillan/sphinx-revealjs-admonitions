@@ -37,3 +37,13 @@ Followed only by a comment.
 :::
 
 % speaker comment
+
+## In list
+
+- item
+
+  :::{danger}
+  :class: slide
+
+  Parent is a list_item.
+  :::

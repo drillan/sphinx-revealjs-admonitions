@@ -6,9 +6,12 @@ from typing import Any
 
 from docutils import nodes
 from sphinx.transforms.post_transforms import SphinxPostTransform
+from sphinx.util import logging
 from sphinx_revealjs.nodes import revealjs_break
 
 MARKER = "slide"
+
+logger = logging.getLogger(__name__)
 
 
 class AdmonitionToSlide(SphinxPostTransform):
@@ -27,6 +30,13 @@ class AdmonitionToSlide(SphinxPostTransform):
         for node in targets:
             parent = node.parent
             if not isinstance(parent, nodes.section):
+                logger.warning(
+                    "admonition marked '%s' is not a direct child of a section "
+                    "(parent=%s); not split into a slide.",
+                    MARKER,
+                    type(parent).__name__,
+                    location=node,
+                )
                 continue
             index = parent.index(node)
             if self._has_visible_tail(parent.children[index + 1 :]):
